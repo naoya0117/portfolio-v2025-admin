@@ -21,7 +21,7 @@ export default function EditBlogPage() {
 
   const loadBlogPost = useCallback(async (slug: string) => {
     try {
-      const result = await fetchBlogPost(slug);
+      const result = await fetchBlogPost(slug) as { blogPost: BlogPost } | null;
       if (result?.blogPost) {
         setPost(result.blogPost);
         setFormData({

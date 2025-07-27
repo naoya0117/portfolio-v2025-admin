@@ -118,7 +118,7 @@ export interface CreateMonologueInput {
 
 export interface UpdateMonologueInput {
   content?: string;
-  contentType?: 'POST' | 'CODE';
+  contentType?: 'POST' | 'CODE' | 'IMAGE' | 'URL_PREVIEW' | 'BLOG';
   codeLanguage?: string;
   codeSnippet?: string;
   tags?: string[];
@@ -152,7 +152,7 @@ export function useBlogManagement() {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
 
   const fetchBlogPosts = useCallback(async () => {
-    const result = await executeQuery(GET_BLOG_POSTS);
+    const result = await executeQuery(GET_BLOG_POSTS) as { adminBlogPosts: BlogPost[] } | null;
     if (result?.adminBlogPosts) {
       setBlogPosts(result.adminBlogPosts);
     }
@@ -164,7 +164,7 @@ export function useBlogManagement() {
   }, [executeQuery]);
 
   const createBlogPost = useCallback(async (input: CreateBlogPostInput) => {
-    const result = await executeQuery(CREATE_BLOG_POST, { input });
+    const result = await executeQuery(CREATE_BLOG_POST, { input }) as { createBlogPost: BlogPost } | null;
     if (result?.createBlogPost) {
       setBlogPosts(prev => [...prev, result.createBlogPost]);
     }
@@ -172,7 +172,7 @@ export function useBlogManagement() {
   }, [executeQuery]);
 
   const updateBlogPost = useCallback(async (id: string, input: UpdateBlogPostInput) => {
-    const result = await executeQuery(UPDATE_BLOG_POST, { id, input });
+    const result = await executeQuery(UPDATE_BLOG_POST, { id, input }) as { updateBlogPost: BlogPost } | null;
     if (result?.updateBlogPost) {
       setBlogPosts(prev => 
         prev.map(post => post.id === id ? result.updateBlogPost : post)
@@ -182,7 +182,7 @@ export function useBlogManagement() {
   }, [executeQuery]);
 
   const deleteBlogPost = useCallback(async (id: string) => {
-    const result = await executeQuery(DELETE_BLOG_POST, { id });
+    const result = await executeQuery(DELETE_BLOG_POST, { id }) as { deleteBlogPost: boolean } | null;
     if (result?.deleteBlogPost) {
       setBlogPosts(prev => prev.filter(post => post.id !== id));
     }
@@ -190,7 +190,7 @@ export function useBlogManagement() {
   }, [executeQuery]);
 
   const publishBlogPost = useCallback(async (id: string) => {
-    const result = await executeQuery(PUBLISH_BLOG_POST, { id });
+    const result = await executeQuery(PUBLISH_BLOG_POST, { id }) as { publishBlogPost: BlogPost } | null;
     if (result?.publishBlogPost) {
       setBlogPosts(prev => 
         prev.map(post => post.id === id ? result.publishBlogPost : post)
@@ -200,7 +200,7 @@ export function useBlogManagement() {
   }, [executeQuery]);
 
   const unpublishBlogPost = useCallback(async (id: string) => {
-    const result = await executeQuery(UNPUBLISH_BLOG_POST, { id });
+    const result = await executeQuery(UNPUBLISH_BLOG_POST, { id }) as { unpublishBlogPost: BlogPost } | null;
     if (result?.unpublishBlogPost) {
       setBlogPosts(prev => 
         prev.map(post => post.id === id ? result.unpublishBlogPost : post)
@@ -228,7 +228,7 @@ export function useMonologueManagement() {
   const [monologues, setMonologues] = useState<Monologue[]>([]);
 
   const fetchMonologues = useCallback(async (limit?: number, offset?: number) => {
-    const result = await executeQuery(GET_MONOLOGUES, { limit, offset });
+    const result = await executeQuery(GET_MONOLOGUES, { limit, offset }) as { adminMonologues: Monologue[] } | null;
     if (result?.adminMonologues) {
       setMonologues(result.adminMonologues);
     }
@@ -241,7 +241,7 @@ export function useMonologueManagement() {
 
   const createMonologue = useCallback(async (input: CreateMonologueInput) => {
     console.log('Creating monologue with input:', input);
-    const result = await executeQuery(CREATE_MONOLOGUE, { input });
+    const result = await executeQuery(CREATE_MONOLOGUE, { input }) as { createMonologue: Monologue } | null;
     if (result?.createMonologue) {
       setMonologues(prev => [...prev, result.createMonologue]);
     }
@@ -249,7 +249,7 @@ export function useMonologueManagement() {
   }, [executeQuery]);
 
   const updateMonologue = useCallback(async (id: string, input: UpdateMonologueInput) => {
-    const result = await executeQuery(UPDATE_MONOLOGUE, { id, input });
+    const result = await executeQuery(UPDATE_MONOLOGUE, { id, input }) as { updateMonologue: Monologue } | null;
     if (result?.updateMonologue) {
       setMonologues(prev => 
         prev.map(mono => mono.id === id ? result.updateMonologue : mono)
@@ -259,7 +259,7 @@ export function useMonologueManagement() {
   }, [executeQuery]);
 
   const deleteMonologue = useCallback(async (id: string) => {
-    const result = await executeQuery(DELETE_MONOLOGUE, { id });
+    const result = await executeQuery(DELETE_MONOLOGUE, { id }) as { deleteMonologue: boolean } | null;
     if (result?.deleteMonologue) {
       setMonologues(prev => prev.filter(mono => mono.id !== id));
     }
@@ -267,7 +267,7 @@ export function useMonologueManagement() {
   }, [executeQuery]);
 
   const publishMonologue = useCallback(async (id: string) => {
-    const result = await executeQuery(PUBLISH_MONOLOGUE, { id });
+    const result = await executeQuery(PUBLISH_MONOLOGUE, { id }) as { publishMonologue: Monologue } | null;
     if (result?.publishMonologue) {
       setMonologues(prev => 
         prev.map(mono => mono.id === id ? result.publishMonologue : mono)
@@ -277,7 +277,7 @@ export function useMonologueManagement() {
   }, [executeQuery]);
 
   const unpublishMonologue = useCallback(async (id: string) => {
-    const result = await executeQuery(UNPUBLISH_MONOLOGUE, { id });
+    const result = await executeQuery(UNPUBLISH_MONOLOGUE, { id }) as { unpublishMonologue: Monologue } | null;
     if (result?.unpublishMonologue) {
       setMonologues(prev => 
         prev.map(mono => mono.id === id ? result.unpublishMonologue : mono)
@@ -310,7 +310,7 @@ export function useCodeCategoryManagement() {
   const [categories, setCategories] = useState<CodeCategory[]>([]);
 
   const fetchCodeCategories = useCallback(async () => {
-    const result = await executeQuery(GET_CODE_CATEGORIES);
+    const result = await executeQuery(GET_CODE_CATEGORIES) as { codeCategories: CodeCategory[] } | null;
     if (result?.codeCategories) {
       setCategories(result.codeCategories);
     }
@@ -318,7 +318,7 @@ export function useCodeCategoryManagement() {
   }, [executeQuery]);
 
   const createCodeCategory = useCallback(async (input: CreateCodeCategoryInput) => {
-    const result = await executeQuery(CREATE_CODE_CATEGORY, { input });
+    const result = await executeQuery(CREATE_CODE_CATEGORY, { input }) as { createCodeCategory: CodeCategory } | null;
     if (result?.createCodeCategory) {
       setCategories(prev => [...prev, result.createCodeCategory]);
     }
@@ -326,7 +326,7 @@ export function useCodeCategoryManagement() {
   }, [executeQuery]);
 
   const updateCodeCategory = useCallback(async (id: string, input: UpdateCodeCategoryInput) => {
-    const result = await executeQuery(UPDATE_CODE_CATEGORY, { id, input });
+    const result = await executeQuery(UPDATE_CODE_CATEGORY, { id, input }) as { updateCodeCategory: CodeCategory } | null;
     if (result?.updateCodeCategory) {
       setCategories(prev => 
         prev.map(cat => cat.id === id ? result.updateCodeCategory : cat)
@@ -336,7 +336,7 @@ export function useCodeCategoryManagement() {
   }, [executeQuery]);
 
   const deleteCodeCategory = useCallback(async (id: string) => {
-    const result = await executeQuery(DELETE_CODE_CATEGORY, { id });
+    const result = await executeQuery(DELETE_CODE_CATEGORY, { id }) as { deleteCodeCategory: boolean } | null;
     if (result?.deleteCodeCategory) {
       setCategories(prev => prev.filter(cat => cat.id !== id));
     }

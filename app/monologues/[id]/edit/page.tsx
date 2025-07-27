@@ -21,7 +21,7 @@ export default function EditMonologuePage() {
 
   const loadMonologue = useCallback(async (id: string) => {
     try {
-      const result = await fetchMonologue(id);
+      const result = await fetchMonologue(id) as { monologue: Monologue } | null;
       if (result?.monologue) {
         setMonologue(result.monologue);
         setFormData({
