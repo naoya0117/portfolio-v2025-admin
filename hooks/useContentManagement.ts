@@ -15,10 +15,6 @@ import {
   DELETE_MONOLOGUE,
   PUBLISH_MONOLOGUE,
   UNPUBLISH_MONOLOGUE,
-  GET_CODE_CATEGORIES,
-  CREATE_CODE_CATEGORY,
-  UPDATE_CODE_CATEGORY,
-  DELETE_CODE_CATEGORY,
   GENERATE_URL_PREVIEW,
 } from '@/lib/graphql-queries';
 
@@ -54,20 +50,9 @@ export interface Monologue {
   relatedBlogPosts?: string[];
   series?: string;
   category?: string;
-  codeCategory?: CodeCategory;
   likeCount?: number;
 }
 
-export interface CodeCategory {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  parentId?: string;
-  color?: string;
-  icon?: string;
-  children?: CodeCategory[];
-}
 
 export interface UrlPreview {
   title: string;
@@ -113,7 +98,6 @@ export interface CreateMonologueInput {
   url?: string;
   series?: string;
   category?: string;
-  codeCategoryId?: string;
 }
 
 export interface UpdateMonologueInput {
@@ -126,26 +110,8 @@ export interface UpdateMonologueInput {
   url?: string;
   series?: string;
   category?: string;
-  codeCategoryId?: string;
 }
 
-export interface CreateCodeCategoryInput {
-  name: string;
-  slug: string;
-  description?: string;
-  parentId?: string;
-  color?: string;
-  icon?: string;
-}
-
-export interface UpdateCodeCategoryInput {
-  name?: string;
-  slug?: string;
-  description?: string;
-  parentId?: string;
-  color?: string;
-  icon?: string;
-}
 
 export function useBlogManagement() {
   const { executeQuery, data, loading, error } = useGraphQL<unknown>();
@@ -305,51 +271,3 @@ export function useMonologueManagement() {
   };
 }
 
-export function useCodeCategoryManagement() {
-  const { executeQuery, data, loading, error } = useGraphQL<unknown>();
-  const [categories, setCategories] = useState<CodeCategory[]>([]);
-
-  const fetchCodeCategories = useCallback(async () => {
-    const result = await executeQuery(GET_CODE_CATEGORIES) as { codeCategories: CodeCategory[] } | null;
-    if (result?.codeCategories) {
-      setCategories(result.codeCategories);
-    }
-    return result?.codeCategories;
-  }, [executeQuery]);
-
-  const createCodeCategory = useCallback(async (input: CreateCodeCategoryInput) => {
-    const result = await executeQuery(CREATE_CODE_CATEGORY, { input }) as { createCodeCategory: CodeCategory } | null;
-    if (result?.createCodeCategory) {
-      setCategories(prev => [...prev, result.createCodeCategory]);
-    }
-    return result?.createCodeCategory;
-  }, [executeQuery]);
-
-  const updateCodeCategory = useCallback(async (id: string, input: UpdateCodeCategoryInput) => {
-    const result = await executeQuery(UPDATE_CODE_CATEGORY, { id, input }) as { updateCodeCategory: CodeCategory } | null;
-    if (result?.updateCodeCategory) {
-      setCategories(prev => 
-        prev.map(cat => cat.id === id ? result.updateCodeCategory : cat)
-      );
-    }
-    return result?.updateCodeCategory;
-  }, [executeQuery]);
-
-  const deleteCodeCategory = useCallback(async (id: string) => {
-    const result = await executeQuery(DELETE_CODE_CATEGORY, { id }) as { deleteCodeCategory: boolean } | null;
-    if (result?.deleteCodeCategory) {
-      setCategories(prev => prev.filter(cat => cat.id !== id));
-    }
-    return result?.deleteCodeCategory;
-  }, [executeQuery]);
-
-  return {
-    categories,
-    loading,
-    error,
-    fetchCodeCategories,
-    createCodeCategory,
-    updateCodeCategory,
-    deleteCodeCategory,
-  };
-}

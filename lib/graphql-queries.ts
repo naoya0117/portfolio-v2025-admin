@@ -123,15 +123,6 @@ export const GET_MONOLOGUE = `
       relatedBlogPosts
       series
       category
-      codeCategory {
-        id
-        name
-        slug
-        description
-        color
-        icon
-      }
-      difficulty
       likeCount
     }
   }
@@ -153,7 +144,6 @@ export const CREATE_MONOLOGUE = `
       url
       series
       category
-      difficulty
       likeCount
     }
   }
@@ -175,7 +165,6 @@ export const UPDATE_MONOLOGUE = `
       url
       series
       category
-      difficulty
       likeCount
     }
   }
@@ -235,61 +224,6 @@ export const UNPUBLISH_MONOLOGUE = `
   }
 `;
 
-export const GET_CODE_CATEGORIES = `
-  query GetCodeCategories {
-    codeCategories {
-      id
-      name
-      slug
-      description
-      parentId
-      color
-      icon
-      children {
-        id
-        name
-        slug
-        description
-        color
-        icon
-      }
-    }
-  }
-`;
-
-export const CREATE_CODE_CATEGORY = `
-  mutation CreateCodeCategory($input: CreateCodeCategoryInput!) {
-    createCodeCategory(input: $input) {
-      id
-      name
-      slug
-      description
-      parentId
-      color
-      icon
-    }
-  }
-`;
-
-export const UPDATE_CODE_CATEGORY = `
-  mutation UpdateCodeCategory($id: ID!, $input: UpdateCodeCategoryInput!) {
-    updateCodeCategory(id: $id, input: $input) {
-      id
-      name
-      slug
-      description
-      parentId
-      color
-      icon
-    }
-  }
-`;
-
-export const DELETE_CODE_CATEGORY = `
-  mutation DeleteCodeCategory($id: ID!) {
-    deleteCodeCategory(id: $id)
-  }
-`;
 
 export const GENERATE_URL_PREVIEW = `
   mutation GenerateUrlPreview($url: String!) {

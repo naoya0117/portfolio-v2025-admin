@@ -23,7 +23,6 @@ export default function NewMonologuePage() {
     url: '',
     series: '',
     category: '',
-    codeCategoryId: '',
   });
   
   const [tagInput, setTagInput] = useState('');

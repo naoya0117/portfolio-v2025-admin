@@ -15,7 +15,6 @@ const navigation: SidebarItem[] = [
   { name: 'ダッシュボード', href: '/dashboard', icon: '📊' },
   { name: 'ブログ記事', href: '/blogs', icon: '📝' },
   { name: 'モノローグ', href: '/monologues', icon: '💭' },
-  { name: 'カテゴリ', href: '/categories', icon: '📁' },
 ];
 
 export default function Sidebar() {

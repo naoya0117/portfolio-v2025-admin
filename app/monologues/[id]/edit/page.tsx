@@ -34,7 +34,6 @@ export default function EditMonologuePage() {
           url: result.monologue.url || '',
           series: result.monologue.series || '',
           category: result.monologue.category || '',
-          codeCategoryId: result.monologue.codeCategory?.id || '',
         });
       }
     } catch (error) {
