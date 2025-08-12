@@ -22,13 +22,6 @@ const quickActions = [
     href: '/blogs',
     icon: '📝',
     color: 'bg-purple-50 hover:bg-purple-100 border-purple-200'
-  },
-  {
-    title: 'カテゴリ管理',
-    description: 'コンテンツの分類を管理',
-    href: '/categories',
-    icon: '📁',
-    color: 'bg-orange-50 hover:bg-orange-100 border-orange-200'
   }
 ];
 

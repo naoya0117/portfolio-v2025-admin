@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
+import { ZennEditor } from '@/components/ui/zenn-editor';
 import { useBlogManagement, CreateBlogPostInput } from '@/hooks/useContentManagement';
 
 export default function NewBlogPage() {
@@ -106,7 +107,8 @@ export default function NewBlogPage() {
     }
 
     try {
-      await createBlogPost(formData);
+      // Markdownをそのまま保存
+      await createBlogPost({ ...formData, content: formData.content });
       router.push('/blogs');
     } catch (error) {
       console.error('ブログ記事の作成に失敗しました:', error);
@@ -122,7 +124,8 @@ export default function NewBlogPage() {
     }
 
     try {
-      await createBlogPost({ ...formData, status: 'PUBLISHED' });
+      // Markdownをそのまま保存
+      await createBlogPost({ ...formData, content: formData.content, status: 'PUBLISHED' });
       router.push('/blogs');
     } catch (error) {
       console.error('ブログ記事の公開に失敗しました:', error);
@@ -132,9 +135,12 @@ export default function NewBlogPage() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">新規ブログ記事</h1>
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">新規ブログ記事作成</h1>
+            <p className="mt-2 text-gray-600">Zennエディタでリッチな記事を作成しましょう</p>
+          </div>
           <Button variant="outline" onClick={() => router.back()}>
             戻る
           </Button>
@@ -147,9 +153,12 @@ export default function NewBlogPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="space-y-6">
-            <Card className="p-6">
-              <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* メインコンテンツ */}
+            <div className="lg:col-span-2 space-y-6">
+              <Card className="p-6">
+                <h2 className="text-lg font-semibold mb-4">記事内容</h2>
+                <div className="space-y-4">
                 <div>
                   <Label htmlFor="title">タイトル *</Label>
                   <Input
@@ -197,131 +206,141 @@ export default function NewBlogPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="content">内容 *</Label>
-                  <textarea
-                    id="content"
+                  <Label htmlFor="content" className="mb-4 block">内容 *</Label>
+                  
+                  <ZennEditor
                     value={formData.content}
-                    onChange={(e) => handleInputChange('content', e.target.value)}
-                    placeholder="記事の内容（Markdown形式）"
-                    className={`w-full min-h-[300px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.content ? 'border-red-500' : ''}`}
-                    required
+                    onChange={(value) => handleInputChange('content', value)}
+                    placeholder="記事の内容をMarkdown形式で入力してください..."
                   />
+                  
                   {errors.content && (
                     <p className="mt-1 text-sm text-red-600">{errors.content}</p>
                   )}
                 </div>
               </div>
             </Card>
+            </div>
 
-            <Card className="p-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="coverImage">カバー画像URL</Label>
-                  <Input
-                    id="coverImage"
-                    type="url"
-                    value={formData.coverImageUrl}
-                    onChange={(e) => handleInputChange('coverImageUrl', e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="tags">タグ</Label>
-                  <div className="flex gap-2">
+            {/* サイドバー */}
+            <div className="space-y-6">
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">記事設定</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="coverImage">カバー画像URL</Label>
                     <Input
-                      id="tags"
-                      type="text"
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      placeholder="タグを入力"
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                      id="coverImage"
+                      type="url"
+                      value={formData.coverImageUrl}
+                      onChange={(e) => handleInputChange('coverImageUrl', e.target.value)}
+                      placeholder="https://example.com/image.jpg"
+                      className="text-sm"
                     />
-                    <Button type="button" variant="outline" onClick={addTag}>
-                      追加
-                    </Button>
                   </div>
-                  {formData.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {formData.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded flex items-center gap-1"
-                        >
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="text-blue-500 hover:text-blue-700"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
+
+                  <div>
+                    <Label htmlFor="tags">タグ</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="tags"
+                        type="text"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        placeholder="タグを入力"
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                        className="text-sm"
+                      />
+                      <Button type="button" variant="outline" size="sm" onClick={addTag}>
+                        追加
+                      </Button>
                     </div>
-                  )}
+                    {formData.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {formData.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded flex items-center gap-1"
+                          >
+                            {tag}
+                            <button
+                              type="button"
+                              onClick={() => removeTag(tag)}
+                              className="text-blue-500 hover:text-blue-700"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
 
-            <Card className="p-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">SEO設定</h3>
-                
-                <div>
-                  <Label htmlFor="seoTitle">SEOタイトル</Label>
-                  <Input
-                    id="seoTitle"
-                    type="text"
-                    value={formData.seoTitle}
-                    onChange={(e) => handleInputChange('seoTitle', e.target.value)}
-                    placeholder="検索エンジン用タイトル"
-                    className={errors.seoTitle ? 'border-red-500' : ''}
-                  />
-                  {errors.seoTitle && (
-                    <p className="mt-1 text-sm text-red-600">{errors.seoTitle}</p>
-                  )}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">SEO設定</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="seoTitle">SEOタイトル</Label>
+                    <Input
+                      id="seoTitle"
+                      type="text"
+                      value={formData.seoTitle}
+                      onChange={(e) => handleInputChange('seoTitle', e.target.value)}
+                      placeholder="検索エンジン用タイトル"
+                      className={`text-sm ${errors.seoTitle ? 'border-red-500' : ''}`}
+                    />
+                    {errors.seoTitle && (
+                      <p className="mt-1 text-sm text-red-600">{errors.seoTitle}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="seoDescription">SEO説明</Label>
+                    <textarea
+                      id="seoDescription"
+                      value={formData.seoDescription}
+                      onChange={(e) => handleInputChange('seoDescription', e.target.value)}
+                      placeholder="検索エンジン用説明文"
+                      className={`w-full min-h-[80px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${errors.seoDescription ? 'border-red-500' : ''}`}
+                    />
+                    {errors.seoDescription && (
+                      <p className="mt-1 text-sm text-red-600">{errors.seoDescription}</p>
+                    )}
+                  </div>
                 </div>
+              </Card>
 
-                <div>
-                  <Label htmlFor="seoDescription">SEO説明</Label>
-                  <textarea
-                    id="seoDescription"
-                    value={formData.seoDescription}
-                    onChange={(e) => handleInputChange('seoDescription', e.target.value)}
-                    placeholder="検索エンジン用説明文"
-                    className={`w-full min-h-[80px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.seoDescription ? 'border-red-500' : ''}`}
-                  />
-                  {errors.seoDescription && (
-                    <p className="mt-1 text-sm text-red-600">{errors.seoDescription}</p>
-                  )}
+              {/* 操作ボタン */}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">操作</h3>
+                <div className="flex flex-col gap-3">
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    disabled={loading}
+                  >
+                    {loading ? '保存中...' : '下書き保存'}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleSaveAndPublish}
+                    disabled={loading}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {loading ? '公開中...' : '公開'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => router.back()}
+                    disabled={loading}
+                  >
+                    キャンセル
+                  </Button>
                 </div>
-              </div>
-            </Card>
-
-            <div className="flex gap-3 justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-                disabled={loading}
-              >
-                キャンセル
-              </Button>
-              <Button
-                type="submit"
-                variant="outline"
-                disabled={loading}
-              >
-                {loading ? '保存中...' : '下書き保存'}
-              </Button>
-              <Button
-                type="button"
-                onClick={handleSaveAndPublish}
-                disabled={loading}
-              >
-                {loading ? '公開中...' : '公開'}
-              </Button>
+              </Card>
             </div>
           </div>
         </form>
@@ -329,3 +348,4 @@ export default function NewBlogPage() {
     </DashboardLayout>
   );
 }
+

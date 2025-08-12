@@ -3,6 +3,7 @@ import { useGraphQL } from './useApi';
 import {
   GET_BLOG_POSTS,
   GET_BLOG_POST,
+  GET_BLOG_POST_BY_ID,
   CREATE_BLOG_POST,
   UPDATE_BLOG_POST,
   DELETE_BLOG_POST,
@@ -129,6 +130,10 @@ export function useBlogManagement() {
     return await executeQuery(GET_BLOG_POST, { slug });
   }, [executeQuery]);
 
+  const fetchBlogPostById = useCallback(async (id: string) => {
+    return await executeQuery(GET_BLOG_POST_BY_ID, { id });
+  }, [executeQuery]);
+
   const createBlogPost = useCallback(async (input: CreateBlogPostInput) => {
     const result = await executeQuery(CREATE_BLOG_POST, { input }) as { createBlogPost: BlogPost } | null;
     if (result?.createBlogPost) {
@@ -181,6 +186,7 @@ export function useBlogManagement() {
     error,
     fetchBlogPosts,
     fetchBlogPost,
+    fetchBlogPostById,
     createBlogPost,
     updateBlogPost,
     deleteBlogPost,

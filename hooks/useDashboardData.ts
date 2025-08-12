@@ -89,10 +89,13 @@ export function useDashboardData(): DashboardStats {
         let errorMessage = 'データの取得に失敗しました';
         
         if (error instanceof Error) {
+          console.error('Detailed error message:', error.message);
           if (error.message.includes('認証が必要')) {
             errorMessage = 'ログインが必要です。ページを再読み込みしてログインしてください。';
           } else if (error.message.includes('GraphQL Error')) {
-            errorMessage = 'サーバーエラーが発生しました。API サーバーの状態を確認してください。';
+            errorMessage = `サーバーエラー: ${error.message}`;
+          } else if (error.message.includes('syntax error')) {
+            errorMessage = `SQL構文エラー: ${error.message}`;
           } else {
             errorMessage = error.message;
           }

@@ -36,6 +36,26 @@ export const GET_BLOG_POST = `
   }
 `;
 
+export const GET_BLOG_POST_BY_ID = `
+  query GetBlogPostByID($id: ID!) {
+    blogPostByID(id: $id) {
+      id
+      title
+      content
+      slug
+      excerpt
+      coverImageUrl
+      tags
+      status
+      seoTitle
+      seoDescription
+      publishedAt
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const CREATE_BLOG_POST = `
   mutation CreateBlogPost($input: CreateBlogPostInput!) {
     createBlogPost(input: $input) {

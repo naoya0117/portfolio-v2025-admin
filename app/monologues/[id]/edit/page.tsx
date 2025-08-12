@@ -110,19 +110,6 @@ export default function EditMonologuePage() {
             <Card className="p-6">
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="contentType">コンテンツタイプ</Label>
-                  <select
-                    id="contentType"
-                    value={formData.contentType || 'POST'}
-                    onChange={(e) => handleInputChange('contentType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="POST">投稿</option>
-                    <option value="CODE">コード</option>
-                  </select>
-                </div>
-
-                <div>
                   <Label htmlFor="content">内容 *</Label>
                   <textarea
                     id="content"
@@ -134,6 +121,22 @@ export default function EditMonologuePage() {
                   />
                 </div>
 
+                <div>
+                  <Label htmlFor="contentType">コンテンツタイプ</Label>
+                  <select
+                    id="contentType"
+                    value={formData.contentType || 'POST'}
+                    onChange={(e) => handleInputChange('contentType', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="POST">投稿</option>
+                    <option value="CODE">コード</option>
+                    <option value="IMAGE">画像</option>
+                    <option value="URL_PREVIEW">URL プレビュー</option>
+                    <option value="BLOG">ブログ</option>
+                  </select>
+                </div>
+
                 {formData.contentType === 'CODE' && (
                   <>
                     <div>
@@ -143,7 +146,7 @@ export default function EditMonologuePage() {
                         type="text"
                         value={formData.codeLanguage || ''}
                         onChange={(e) => handleInputChange('codeLanguage', e.target.value)}
-                        placeholder="JavaScript, Python, etc."
+                        placeholder="例: JavaScript, Python, Go"
                       />
                     </div>
 
@@ -153,45 +156,41 @@ export default function EditMonologuePage() {
                         id="codeSnippet"
                         value={formData.codeSnippet || ''}
                         onChange={(e) => handleInputChange('codeSnippet', e.target.value)}
-                        placeholder="コードスニペット"
-                        className="w-full min-h-[150px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                        placeholder="コードを入力"
+                        className="w-full min-h-[200px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                       />
                     </div>
-
                   </>
                 )}
 
-
                 <div>
-                  <Label>公開状態</Label>
-                  <div className="flex items-center gap-4 mt-2">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="isPublished"
-                        checked={!formData.isPublished}
-                        onChange={() => handleInputChange('isPublished', false)}
-                        className="mr-2"
-                      />
-                      下書き
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="isPublished"
-                        checked={formData.isPublished}
-                        onChange={() => handleInputChange('isPublished', true)}
-                        className="mr-2"
-                      />
-                      公開
-                    </label>
-                  </div>
+                  <Label htmlFor="url">URL</Label>
+                  <Input
+                    id="url"
+                    type="url"
+                    value={formData.url || ''}
+                    onChange={(e) => handleInputChange('url', e.target.value)}
+                    placeholder="https://example.com"
+                  />
                 </div>
               </div>
             </Card>
 
             <Card className="p-6">
               <div className="space-y-4">
+                <div>
+                  <Label htmlFor="isPublished">公開状態</Label>
+                  <select
+                    id="isPublished"
+                    value={formData.isPublished ? 'true' : 'false'}
+                    onChange={(e) => handleInputChange('isPublished', e.target.value === 'true')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="false">下書き</option>
+                    <option value="true">公開</option>
+                  </select>
+                </div>
+
                 <div>
                   <Label htmlFor="tags">タグ</Label>
                   <div className="flex gap-2">

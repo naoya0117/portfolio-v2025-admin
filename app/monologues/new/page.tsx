@@ -15,7 +15,7 @@ export default function NewMonologuePage() {
   
   const [formData, setFormData] = useState<CreateMonologueInput>({
     content: '',
-    contentType: 'POST' as const,
+    contentType: 'POST',
     codeLanguage: '',
     codeSnippet: '',
     tags: [],
@@ -48,32 +48,11 @@ export default function NewMonologuePage() {
     }));
   };
 
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
-
-  const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
-    
-    if (!formData.content.trim()) {
-      newErrors.content = '内容は必須です';
-    } else if (formData.content.length < 5) {
-      newErrors.content = '内容は5文字以上で入力してください';
-    }
-    
-    if (formData.contentType === 'CODE') {
-      if (formData.codeSnippet && formData.codeSnippet.length > 5000) {
-        newErrors.codeSnippet = 'コードスニペットは5000文字以内で入力してください';
-      }
-    }
-    
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    if (!formData.content.trim()) {
+      alert('内容は必須です');
       return;
     }
 
@@ -82,14 +61,15 @@ export default function NewMonologuePage() {
       router.push('/monologues');
     } catch (error) {
       console.error('モノローグの作成に失敗しました:', error);
-      setErrors({ general: 'モノローグの作成に失敗しました。もう一度お試しください。' });
+      alert('モノローグの作成に失敗しました');
     }
   };
 
   const handleSaveAndPublish = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    if (!formData.content.trim()) {
+      alert('内容は必須です');
       return;
     }
 
@@ -98,7 +78,7 @@ export default function NewMonologuePage() {
       router.push('/monologues');
     } catch (error) {
       console.error('モノローグの公開に失敗しました:', error);
-      setErrors({ general: 'モノローグの公開に失敗しました。もう一度お試しください。' });
+      alert('モノローグの公開に失敗しました');
     }
   };
 
@@ -112,16 +92,22 @@ export default function NewMonologuePage() {
           </Button>
         </div>
 
-        {errors.general && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-600">{errors.general}</p>
-          </div>
-        )}
-
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
             <Card className="p-6">
               <div className="space-y-4">
+                <div>
+                  <Label htmlFor="content">内容 *</Label>
+                  <textarea
+                    id="content"
+                    value={formData.content}
+                    onChange={(e) => handleInputChange('content', e.target.value)}
+                    placeholder="モノローグの内容"
+                    className="w-full min-h-[200px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
                 <div>
                   <Label htmlFor="contentType">コンテンツタイプ</Label>
                   <select
@@ -132,22 +118,10 @@ export default function NewMonologuePage() {
                   >
                     <option value="POST">投稿</option>
                     <option value="CODE">コード</option>
+                    <option value="IMAGE">画像</option>
+                    <option value="URL_PREVIEW">URL プレビュー</option>
+                    <option value="BLOG">ブログ</option>
                   </select>
-                </div>
-
-                <div>
-                  <Label htmlFor="content">内容 *</Label>
-                  <textarea
-                    id="content"
-                    value={formData.content}
-                    onChange={(e) => handleInputChange('content', e.target.value)}
-                    placeholder="モノローグの内容"
-                    className={`w-full min-h-[200px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.content ? 'border-red-500' : ''}`}
-                    required
-                  />
-                  {errors.content && (
-                    <p className="mt-1 text-sm text-red-600">{errors.content}</p>
-                  )}
                 </div>
 
                 {formData.contentType === 'CODE' && (
@@ -159,7 +133,7 @@ export default function NewMonologuePage() {
                         type="text"
                         value={formData.codeLanguage}
                         onChange={(e) => handleInputChange('codeLanguage', e.target.value)}
-                        placeholder="JavaScript, Python, etc."
+                        placeholder="例: JavaScript, Python, Go"
                       />
                     </div>
 
@@ -169,17 +143,23 @@ export default function NewMonologuePage() {
                         id="codeSnippet"
                         value={formData.codeSnippet}
                         onChange={(e) => handleInputChange('codeSnippet', e.target.value)}
-                        placeholder="コードスニペット"
-                        className={`w-full min-h-[150px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono ${errors.codeSnippet ? 'border-red-500' : ''}`}
+                        placeholder="コードを入力"
+                        className="w-full min-h-[200px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                       />
-                      {errors.codeSnippet && (
-                        <p className="mt-1 text-sm text-red-600">{errors.codeSnippet}</p>
-                      )}
                     </div>
-
                   </>
                 )}
 
+                <div>
+                  <Label htmlFor="url">URL</Label>
+                  <Input
+                    id="url"
+                    type="url"
+                    value={formData.url}
+                    onChange={(e) => handleInputChange('url', e.target.value)}
+                    placeholder="https://example.com"
+                  />
+                </div>
               </div>
             </Card>
 
